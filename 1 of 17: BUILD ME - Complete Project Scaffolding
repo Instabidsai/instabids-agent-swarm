@@ -1,0 +1,30 @@
+Instructions for Execution Agent: This is your first and only scaffolding task. Your job is to create the complete file and directory structure for the entire InstaBids Agent Swarm project. Execute the commands below precisely as written in the project's root directory. DO NOT create any other files or directories.BUILD ME: Complete Project ScaffoldingObjective: To create the final and complete empty file structure for the entire application, ensuring that all subsequent BUILD ME documents have a pre-defined file to populate.1. Create Complete Directory StructureRun this command from your project root to create all necessary directories and subdirectories. This structure is derived from the COMPLETE CODEX BUILD PLAN.mkdir -p build_coordination/ \
+         core/base core/events core/memory core/security \
+         agents/homeowner_intake agents/project_scope agents/communication_filter agents/payment_gate agents/ui_generator \
+         ui/src/components ui/src/hooks ui/src/pages ui/src/styles \
+         tests/agent_specific tests/e2e tests/integration tests/performance tests/security \
+         deployment/scripts deployment/postgres deployment/config \
+         docs/
+2. Create All Empty Project FilesRun this command from your project root to create all the empty Python, TypeScript, and configuration files. They will be populated by subsequent "Build Me" documents.touch core/__init__.py core/base/__init__.py core/events/__init__.py core/memory/__init__.py core/security/__init__.py \
+      core/base/base_agent.py \
+      core/events/publisher.py core/events/consumer.py core/events/schemas.py \
+      core/memory/redis_client.py core/memory/supabase_client.py core/memory/event_store.py \
+      core/security/contact_filter.py core/security/cost_breaker.py \
+      agents/__init__.py \
+      agents/homeowner_intake/__init__.py agents/homeowner_intake/intake_agent.py agents/homeowner_intake/nlp_processor.py agents/homeowner_intake/intake_schemas.py \
+      agents/project_scope/__init__.py agents/project_scope/scope_agent.py \
+      agents/communication_filter/__init__.py agents/communication_filter/filter_agent.py \
+      agents/payment_gate/__init__.py agents/payment_gate/payment_agent.py \
+      agents/ui_generator/__init__.py agents/ui_generator/ui_agent.py \
+      ui/package.json ui/tsconfig.json ui/next.config.js ui/postcss.config.js ui/tailwind.config.ts \
+      ui/src/pages/_app.tsx ui/src/pages/index.tsx ui/src/pages/api/projects/submit.ts \
+      ui/src/styles/globals.css \
+      ui/src/components/AgentSwarmVisualizer.tsx ui/src/components/ProjectIntakeForm.tsx \
+      tests/__init__.py tests/conftest.py \
+      tests/agent_specific/test_intake_agent.py tests/agent_specific/test_scope_agent.py \
+      tests/security/test_contact_leakage.py \
+      tests/integration/test_event_flows.py \
+      deployment/docker-compose.yml deployment/Dockerfile \
+      deployment/postgres/init.sql \
+      main.py .gitignore .env requirements.txt README.md AGENT_ASSIGNMENTS.md CODEBASE_MANIFEST.json
+This document completes the project scaffolding. The file tree is now fully established, matching the master build plan. The BUILD ME documents for populating these files will follow.
