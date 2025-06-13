@@ -1,0 +1,15 @@
+{
+  "project": "instabids-homeowner-swarm",
+  "version": "1.0.0",
+  "architecture": "event-driven-agent-swarm",
+  "entryPoints": {
+    "api": "main.py",
+    "intake_agent": "agents/homeowner_intake/intake_agent.py"
+  },
+  "testCommand": "python -m pytest tests/",
+  "buildCommand": "docker-compose up -d --build",
+  "criticalRules": [
+    "NO_DIRECT_AGENT_COMMUNICATION",
+    "CONTACT_PROTECTION_ABSOLUTE"
+  ]
+}
