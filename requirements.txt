@@ -7,6 +7,8 @@ python-dotenv
 # Agent & AI Frameworks
 langchain
 langchain-openai
+openai
+websockets
 
 # Database & Cache
 redis
