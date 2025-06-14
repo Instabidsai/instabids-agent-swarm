@@ -10,6 +10,11 @@ from langchain_openai import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
 
 class ProjectScopeAgent(BaseAgent):
+    """Agent responsible for generating a project scope from intake data."""
+
+    # Define chain at the class level so tests can patch it easily
+    chain: LLMChain | None = None
+
     def __init__(self, agent_id: str = None):
         super().__init__(
             agent_type='project_scope',

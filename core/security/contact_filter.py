@@ -11,7 +11,8 @@ class ContactProtectionFilter:
     ]
     EMAIL_PATTERNS = [
         re.compile(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'),
-        re.compile(r'\b[A-Za-z0-9._%+-]+\s*\[\s*at\s*\]\s*[A-Za-z0-9.-]+\s*\[\s*dot\s*\]\s*[A-Z|a-z]{2,}', re.IGNORECASE),
+        # Matches variations like "test [at] example [dot] com" or "test AT example DOT com"
+        re.compile(r'\b[A-Za-z0-9._%+-]+\s*(?:\[?\s*at\s*\]?|@)\s*[A-Za-z0-9.-]+\s*(?:\[?\s*dot\s*\]?|\.)\s*[A-Z|a-z]{2,}\b', re.IGNORECASE),
     ]
     INTENT_PATTERNS = [
         re.compile(r'\b(call|text|email|contact|reach)\s+me\b', re.IGNORECASE),

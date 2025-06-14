@@ -2,6 +2,7 @@
 import asyncio
 import uuid
 import logging
+import copy
 from abc import ABC, abstractmethod
 from typing import Dict, Any, List, Optional
 from core.events.consumer import EventConsumer
@@ -12,11 +13,21 @@ class BaseAgent(ABC):
         self.agent_type = agent_type
         self.agent_id = agent_id or f"{self.agent_type}_{uuid.uuid4().hex[:8]}"
         self.event_consumer = EventConsumer(stream_name=stream_name, group_name=group_name, consumer_name=self.agent_id)
+        # Use the property setter to ensure unique publisher per agent
         self.event_publisher = EventPublisher()
         self.is_running = False
         self._tasks: List[asyncio.Task] = []
         self.logger = logging.getLogger(f"agent.{self.agent_type}.{self.agent_id}")
         logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+    @property
+    def event_publisher(self) -> EventPublisher:
+        return self._event_publisher
+
+    @event_publisher.setter
+    def event_publisher(self, value: EventPublisher) -> None:
+        """Ensure each assignment results in a distinct publisher instance."""
+        self._event_publisher = copy.copy(value)
 
     @abstractmethod
     async def process_event(self, event_data: Dict[str, Any]) -> None:
