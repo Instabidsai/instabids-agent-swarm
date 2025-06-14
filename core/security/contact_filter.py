@@ -10,8 +10,12 @@ class ContactProtectionFilter:
         re.compile(r'\+1[-.\s]?\d{3}[-.\s]?\d{3}[-.\s]?\d{4}'),
     ]
     EMAIL_PATTERNS = [
+        # Standard email format
         re.compile(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'),
+        # Obfuscated format like "name [at] domain [dot] com"
         re.compile(r'\b[A-Za-z0-9._%+-]+\s*\[\s*at\s*\]\s*[A-Za-z0-9.-]+\s*\[\s*dot\s*\]\s*[A-Z|a-z]{2,}', re.IGNORECASE),
+        # Spelled-out format like "name AT domain DOT com"
+        re.compile(r'\b[A-Za-z0-9._%+-]+\s*(?:at|@)\s*[A-Za-z0-9.-]+\s*(?:dot|\.)\s*[A-Za-z]{2,}\b', re.IGNORECASE),
     ]
     INTENT_PATTERNS = [
         re.compile(r'\b(call|text|email|contact|reach)\s+me\b', re.IGNORECASE),

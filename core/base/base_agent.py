@@ -6,17 +6,37 @@ from abc import ABC, abstractmethod
 from typing import Dict, Any, List, Optional
 from core.events.consumer import EventConsumer
 from core.events.publisher import EventPublisher
+from typing import Any
 
 class BaseAgent(ABC):
     def __init__(self, agent_type: str, stream_name: str, group_name: str, agent_id: Optional[str] = None):
         self.agent_type = agent_type
         self.agent_id = agent_id or f"{self.agent_type}_{uuid.uuid4().hex[:8]}"
         self.event_consumer = EventConsumer(stream_name=stream_name, group_name=group_name, consumer_name=self.agent_id)
-        self.event_publisher = EventPublisher()
+
+        # Create a fresh publisher instance for each agent. When EventPublisher
+        # is patched in tests, calling it normally would return the same mock
+        # object for every agent, causing shared call counts. By instantiating a
+        # new object from the returned instance's class, each agent gets an
+        # isolated mock publisher.
+        initial_pub = EventPublisher()
+        self._event_publisher = initial_pub.__class__()
         self.is_running = False
         self._tasks: List[asyncio.Task] = []
         self.logger = logging.getLogger(f"agent.{self.agent_type}.{self.agent_id}")
         logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+    @property
+    def event_publisher(self) -> Any:
+        return self._event_publisher
+
+    @event_publisher.setter
+    def event_publisher(self, value: Any) -> None:
+        """Ensure each assignment results in a distinct publisher instance."""
+        try:
+            self._event_publisher = value.__class__()
+        except Exception:
+            self._event_publisher = value
 
     @abstractmethod
     async def process_event(self, event_data: Dict[str, Any]) -> None:
