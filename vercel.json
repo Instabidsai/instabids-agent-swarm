@@ -1,0 +1,31 @@
+{
+  "version": 2,
+  "name": "instabids-agent-swarm",
+  "builds": [
+    {
+      "src": "ui/package.json",
+      "use": "@vercel/next",
+      "config": {
+        "distDir": ".next"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/ui/$1"
+    }
+  ],
+  "functions": {
+    "ui/src/pages/api/**/*.js": {
+      "runtime": "nodejs18.x"
+    }
+  },
+  "env": {
+    "NODE_ENV": "production"
+  }
+}
