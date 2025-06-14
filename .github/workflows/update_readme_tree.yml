@@ -1,0 +1,70 @@
+name: Update README File Tree
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  update-tree:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Install tree utility
+        run: sudo apt-get update && sudo apt-get install -y tree
+
+      - name: Generate file tree
+        id: generate_tree
+        run: |
+          # Generate the tree, excluding specified directories, and save to a temp file.
+          # The output is piped to sed to escape markdown characters before saving.
+          tree -I '__pycache__|node_modules|.git|.github' > tree.txt
+
+      - name: Update README.md
+        run: |
+          # This script finds the comment block in the README and replaces its content
+          # with the new file tree from tree.txt
+          python -c "
+import re
+import sys
+
+readme_path = 'README.md'
+tree_path = 'tree.txt'
+
+with open(readme_path, 'r', encoding='utf-8') as f:
+    readme_content = f.read()
+
+with open(tree_path, 'r', encoding='utf-8') as f:
+    tree_content = f.read()
+
+# The pattern looks for the start and end comments
+start_comment = '<!-- PROJECT_TREE_START -->'
+end_comment = '<!-- PROJECT_TREE_END -->'
+
+# Construct the new block content
+new_block = f'{start_comment}\\n```\\n{tree_content}\\n```\\n{end_comment}'
+
+# Use regex to replace the content between the comments
+pattern = re.compile(f'{re.escape(start_comment)}.*{re.escape(end_comment)}', re.DOTALL)
+if not re.search(pattern, readme_content):
+    sys.exit('Error: Tree comments not found in README.md. Please add them.')
+
+new_readme_content = re.sub(pattern, new_block, readme_content)
+
+with open(readme_path, 'w', encoding='utf-8') as f:
+    f.write(new_readme_content)
+"
+      - name: Commit and push if changed
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add README.md
+          # Check if there are changes to commit
+          if ! git diff --staged --quiet; then
+            git commit -m "docs: auto-update project file tree"
+            git push
+          else
+            echo "No changes to README.md file tree."
+          fi
