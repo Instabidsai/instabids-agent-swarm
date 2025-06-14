@@ -1,29 +1,18 @@
 // ui/src/components/AgentSwarmVisualizer.tsx
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const MOCK_AGENTS_DATA = [
-    { id: 'intake_01', type: 'Intake', status: 'processing' },
-    { id: 'security_01', type: 'Security', status: 'active' },
-    { id: 'scope_01', type: 'Scoping', status: 'waiting' },
-    { id: 'payment_01', type: 'Payment', status: 'idle' },
-    { id: 'data_01', type: 'Data', status: 'idle' },
-];
+interface Agent {
+    id: string;
+    type: string;
+    status: string;
+}
 
-export const AgentSwarmVisualizer = () => {
-    const [agents, setAgents] = useState<any[]>([]);
+interface AgentSwarmVisualizerProps {
+    agents: Agent[];
+}
 
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setAgents(prev => {
-                if (prev.length < MOCK_AGENTS_DATA.length) {
-                    return [...prev, MOCK_AGENTS_DATA[prev.length]];
-                }
-                return prev.map(agent => ({ ...agent, status: ['idle', 'waiting', 'processing', 'active'][Math.floor(Math.random() * 4)] }));
-            });
-        }, 2500);
-        return () => clearInterval(interval);
-    }, []);
+export const AgentSwarmVisualizer: React.FC<AgentSwarmVisualizerProps> = ({ agents }) => {
 
     const getStatusStyles = (status: string) => {
         switch (status) {

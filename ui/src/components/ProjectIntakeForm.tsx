@@ -1,10 +1,13 @@
 // ui/src/components/ProjectIntakeForm.tsx
 import React, { useState } from 'react';
 
-export const ProjectIntakeForm = () => {
-    const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
+interface ProjectIntakeFormProps {
+    onSubmissionSuccess: (projectId: string) => void;
+}
+
+export const ProjectIntakeForm: React.FC<ProjectIntakeFormProps> = ({ onSubmissionSuccess }) => {
+    const [status, setStatus] = useState<'idle' | 'submitting' | 'error'>('idle');
     const [error, setError] = useState<string | null>(null);
-    const [projectId, setProjectId] = useState<string | null>(null);
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -19,7 +22,6 @@ export const ProjectIntakeForm = () => {
                 email: formData.get('email') as string,
                 phone: formData.get('phone') as string,
                 zip_code: formData.get('zip_code') as string,
-                city: "Anytown", state: "AS",
             },
             project_details: { raw_description: formData.get('raw_description') as string }
         };
@@ -30,24 +32,14 @@ export const ProjectIntakeForm = () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(submissionData),
             });
-            if (!response.ok) throw new Error((await response.json()).detail || 'Failed to submit.');
+            if (!response.ok) throw new Error((await response.json()).error || 'Failed to submit.');
             const result = await response.json();
-            setProjectId(result.projectId);
-            setStatus('success');
+            onSubmissionSuccess(result.projectId); // Pass the ID to the parent
         } catch (err: any) {
             setStatus('error');
             setError(err.message);
         }
     };
-
-    if (status === 'success') {
-        return (
-            <div className="text-center p-6 bg-green-50 rounded-lg border border-green-200">
-                <h3 className="text-2xl font-semibold text-green-800">Thank You!</h3>
-                <p className="mt-2 text-gray-700">Your project (ID: {projectId}) has been submitted to our agent swarm. You can monitor their real-time activity to the right.</p>
-            </div>
-        );
-    }
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
