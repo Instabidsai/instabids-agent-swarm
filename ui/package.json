@@ -11,7 +11,12 @@
   "dependencies": {
     "react": "^18",
     "react-dom": "^18",
-    "next": "14.2.4"
+    "next": "14.2.4",
+    "@supabase/ssr": "latest",
+    "@supabase/auth-ui-react": "latest",
+    "@supabase/auth-ui-shared": "latest",
+    "@supabase/auth-helpers-react": "latest",
+    "@supabase/auth-helpers-nextjs": "latest"
   },
   "devDependencies": {
     "typescript": "^5",
