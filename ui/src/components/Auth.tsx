@@ -1,9 +1,7 @@
 // ui/src/components/Auth.tsx
 import { Auth } from '@supabase/auth-ui-react'
 import { ThemeSupa } from '@supabase/auth-ui-shared'
-import { createClient } from '@/lib/supabaseClient'
-
-const supabase = createClient()
+import { supabase } from '@/lib/supabaseClient'
 
 export const AuthComponent = () => (
   <div className="w-full max-w-md mx-auto">
