@@ -24,7 +24,7 @@ const useMockAgentData = (setSwarmState: React.Dispatch<React.SetStateAction<Age
         const mockAgents: AgentState[] = agentTypes.map((type, i) => ({
             id: `${type}_${i}`,
             type: type,
-            status: 'idle',
+            status: 'idle' as const,
             lastActivity: new Date(),
             progress: 0,
             currentTask: 'Awaiting tasks'
@@ -36,7 +36,7 @@ const useMockAgentData = (setSwarmState: React.Dispatch<React.SetStateAction<Age
             setSwarmState(prevState => {
                 const newAgents = prevState.agents.map(agent => {
                     if (Math.random() > 0.7) { // 30% chance to change state
-                        const newStatus = Math.random() > 0.3 ? 'processing' : 'idle';
+                        const newStatus: AgentState['status'] = Math.random() > 0.3 ? 'processing' : 'idle';
                         return {
                             ...agent,
                             status: newStatus,
