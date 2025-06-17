@@ -1,6 +1,7 @@
 {
-  "buildCommand": "cd ui && npm ci --legacy-peer-deps || npm install --legacy-peer-deps && npm run build",
-  "outputDirectory": "ui/.next",
-  "installCommand": "cd ui && npm install --legacy-peer-deps",
-  "framework": "nextjs"
+  "rootDirectory": "ui",
+  "framework": "nextjs",
+  "installCommand": "npm install --legacy-peer-deps",
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next"
 }
