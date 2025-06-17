@@ -1,10 +1,14 @@
 {
   "version": 2,
-  "buildCommand": "npm ci && npm run build",
-  "outputDirectory": ".next",
-  "installCommand": "npm ci",
-  "framework": "nextjs",
-  "rootDirectory": "ui",
+  "builds": [
+    {
+      "src": "ui/package.json",
+      "use": "@vercel/next",
+      "config": {
+        "distDir": ".next"
+      }
+    }
+  ],
   "rewrites": [
     {
       "source": "/api/(.*)",
