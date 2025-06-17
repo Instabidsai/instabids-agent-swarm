@@ -1,5 +1,6 @@
 import logging
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from core.events.publisher import EventPublisher
 
@@ -7,6 +8,16 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(level
 logger = logging.getLogger(__name__)
 
 app = FastAPI(title="Instabids Agent Swarm API", version="1.0.0")
+
+# Add CORS middleware for browser requests
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # In production, replace with specific domains
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 event_publisher = EventPublisher()
 
 @app.on_event("shutdown")
@@ -15,7 +26,7 @@ async def shutdown_event():
 
 @app.get("/health", status_code=200)
 async def health_check():
-    return {"status": "ok"}
+    return {"status": "ok", "service": "InstaBids Agent Swarm API"}
 
 class ProjectSubmission(BaseModel):
     project_id: str
@@ -31,7 +42,14 @@ async def submit_project(submission: ProjectSubmission):
             data=submission.model_dump(),
         )
         logger.info(f"Published project submission {submission.project_id}")
-        return {"message": "Project submitted to the agent swarm.", "projectId": submission.project_id, "messageId": message_id}
+        return {
+            "message": "Project submitted to the agent swarm.", 
+            "projectId": submission.project_id, 
+            "messageId": message_id
+        }
     except Exception as e:
         logger.error(f"Failed to submit project: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail="Failed to process project submission.")
+
+# Vercel serverless function handler
+handler = app
