@@ -30,7 +30,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
+  
   api:
     build:
       context: .
@@ -52,6 +52,54 @@ services:
       db:
         condition: service_healthy
 
+  # NEW SERVICE: LiveKit Media Server
+  # Handles the WebRTC connections for real-time video and audio.
+  livekit:
+    image: livekit/livekit-server:latest
+    container_name: instabids-livekit-server
+    restart: unless-stopped
+    ports:
+      - "7880:7880"    # Server API
+      - "7881:7881"    # WebRTC
+      - "7882:7882/udp" # TURN/UDP
+    environment:
+      LIVEKIT_KEYS: "devkey: secret" # Use environment variables in production
+      LIVEKIT_PORT: 7880
+      LIVEKIT_RTC_PORT: 7881
+    networks:
+      - agent-swarm
+    volumes:
+      - ./config/livekit.yaml:/etc/livekit.yaml
+
+  # NEW AGENT: Media Processor Agent
+  # Dedicated agent to process incoming video/audio streams.
+  media-processor-agent:
+    build:
+      context: .
+      dockerfile: ./docker/agents/media-processor/Dockerfile
+    container_name: instabids-media-processor-agent
+    restart: unless-stopped
+    environment:
+      REDIS_URL: redis://redis:6379
+      LIVEKIT_URL: "http://livekit:7880"
+      LIVEKIT_API_KEY: "devkey"
+      LIVEKIT_API_SECRET: "secret"
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      AGENT_TYPE: media_processor
+      AGENT_ID: media-processor-${AGENT_INSTANCE:-001}
+    volumes:
+      - agent-logs:/app/logs
+    networks:
+      - agent-swarm
+    depends_on:
+      - redis
+      - livekit
+
+networks:
+  agent-swarm:
+    driver: bridge
+
 volumes:
   redis_data:
   db_data:
+  agent-logs:
