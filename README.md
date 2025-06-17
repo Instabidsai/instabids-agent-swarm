@@ -50,7 +50,7 @@ vercel --prod
 # Or use the Deploy button above for one-click deployment
 ```
 
-## 🔧 LOCAL DEVELOPMENT
+## 🛠 LOCAL DEVELOPMENT
 
 ### Frontend (Next.js)
 ```bash
@@ -115,3 +115,5 @@ cd ui && npm test
 ---
 
 **Live Demo:** [instabids.ai](https://instabids.ai) | **Repository:** [GitHub](https://github.com/Instabidsai/instabids-agent-swarm)
+
+<!-- Deployment Update: Configuration fixes applied - 2025-06-17 -->
