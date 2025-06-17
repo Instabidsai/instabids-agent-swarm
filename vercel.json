@@ -1,18 +1,6 @@
 {
-  "buildCommand": "cd ui && npm run build",
+  "buildCommand": "cd ui && npm ci --legacy-peer-deps || npm install --legacy-peer-deps && npm run build",
   "outputDirectory": "ui/.next",
-  "installCommand": "cd ui && npm install",
-  "devCommand": "cd ui && npm run dev",
-  "framework": "nextjs",
-  "functions": {
-    "app/api/**/*.js": {
-      "runtime": "@vercel/node"
-    }
-  },
-  "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "/api/$1"
-    }
-  ]
+  "installCommand": "cd ui && npm install --legacy-peer-deps",
+  "framework": "nextjs"
 }
