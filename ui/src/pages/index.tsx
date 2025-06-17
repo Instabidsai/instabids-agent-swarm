@@ -1,29 +1,52 @@
-// ui/src/pages/index.tsx
-import React from 'react';
-import { ProjectIntakeForm } from '@/components/ProjectIntakeForm';
-import { AgentSwarmVisualizer } from '@/components/AgentSwarmVisualizer';
+// This modification enhances the main page.
+// - It removes the static `AgentSwarmVisualizer` and `ProjectStatusDisplay`.
+// - It integrates the new `LiveIntakeAnalysis` to show real-time agent "thinking".
+// - It includes the `ProjectApprovalAction` to enable the HITL workflow.
+// - It uses the new `useSharedAgentState` hook to get project status.
 
-const HomePage = () => {
-    return (
-        <div className="min-h-screen bg-gray-100 font-sans">
-            <div className="container mx-auto p-4 sm:p-8">
-                <header className="text-center mb-12">
-                    <h1 className="text-4xl md:text-5xl font-bold text-gray-800">Welcome to Instabids</h1>
-                    <p className="text-lg text-gray-600 mt-3 max-w-2xl mx-auto">
-                        Describe your project, and our AI agent swarm will handle everything from scoping and security to finding the perfect contractor.
-                    </p>
-                </header>
-                <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
-                    <div className="lg:col-span-3 bg-white p-6 sm:p-8 rounded-xl shadow-lg border border-gray-200">
-                        <ProjectIntakeForm />
-                    </div>
-                    <div className="lg:col-span-2 bg-gray-50 p-6 sm:p-8 rounded-xl border border-gray-200">
-                        <h2 className="text-2xl font-semibold mb-4 text-center text-gray-700">Live Agent Swarm Activity</h2>
-                        <AgentSwarmVisualizer />
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-};
-export default HomePage;
+import { ProjectIntakeForm } from "@/components/ProjectIntakeForm";
+import { LiveIntakeAnalysis } from "@/components/LiveIntakeAnalysis"; // IMPORT NEW
+import { ProjectApprovalAction } from "@/components/ProjectApprovalAction"; // IMPORT NEW
+import { useSharedAgentState } from "@/contexts/AgentSwarmContext"; // IMPORT NEW
+import { motion } from 'framer-motion';
+
+export default function Home() {
+  const { state } = useSharedAgentState();
+
+  return (
+    <main className="flex min-h-screen flex-col items-center justify-between p-4 md:p-24 bg-gray-100">
+      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
+        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/50">
+          InstaBids Agent Swarm
+        </p>
+      </div>
+
+      <div className="w-full max-w-5xl mt-10 grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <ProjectIntakeForm />
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
+          {/* This component will now render inside the chat pane automatically */}
+          <LiveIntakeAnalysis />
+        </motion.div>
+      </div>
+      
+      {/* This component registers the HITL action but renders nothing itself */}
+      <ProjectApprovalAction />
+
+      <footer className="w-full text-center text-gray-500 mt-12">
+        <p>Project Status: <span className="font-semibold text-blue-600">{state.project.status}</span></p>
+        <p>Current Stage: <span className="font-semibold text-blue-600">{state.project.currentStage}</span></p>
+      </footer>
+    </main>
+  );
+}
