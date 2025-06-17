@@ -1,19 +1,12 @@
 {
-  "version": 2,
-  "builds": [
+  "framework": "nextjs",
+  "buildCommand": "cd ui && npm run build",
+  "outputDirectory": "ui/.next",
+  "installCommand": "cd ui && npm install",
+  "rewrites": [
     {
-      "src": "ui/package.json",
-      "use": "@vercel/next"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "https://instabids-agent-swarm-8k5am.ondigitalocean.app/api/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "ui/$1"
+      "source": "/api/(.*)",
+      "destination": "https://instabids-agent-swarm-8k5am.ondigitalocean.app/api/$1"
     }
   ]
 }
