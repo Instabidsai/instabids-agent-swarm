@@ -1,7 +1,12 @@
 {
-  "rootDirectory": "ui",
-  "framework": "nextjs",
-  "installCommand": "npm install --legacy-peer-deps",
-  "buildCommand": "npm run build",
-  "outputDirectory": ".next"
+  "version": 2,
+  "builds": [
+    {
+      "src": "ui/package.json",
+      "use": "@vercel/next",
+      "config": {
+        "zeroConfig": true
+      }
+    }
+  ]
 }
