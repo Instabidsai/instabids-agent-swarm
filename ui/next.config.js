@@ -15,7 +15,7 @@ const nextConfig = {
   images: {
     domains: ['instabids.ai'],
   },
-  output: 'standalone',
+  // REMOVED: output: 'standalone', - This was causing Vercel deployment issues
 }
 
 module.exports = nextConfig
