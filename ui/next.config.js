@@ -8,7 +8,7 @@ const nextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: '/api/:path*', // Keep API routes within Next.js for Vercel routing
+        destination: 'https://instabids-agent-swarm-8k5am.ondigitalocean.app/:path*', // Proxy to DigitalOcean backend
       },
     ]
   },
