@@ -1,40 +1,19 @@
 {
   "version": 2,
-  "builds": [
+  "buildCommand": "cd ui && npm install && npm run build",
+  "outputDirectory": "ui/.next",
+  "installCommand": "cd ui && npm install",
+  "framework": "nextjs",
+  "rewrites": [
     {
-      "src": "ui/package.json",
-      "use": "@vercel/next",
-      "config": {
-        "distDir": ".next"
-      }
-    },
-    {
-      "src": "main.py",
-      "use": "@vercel/python",
-      "config": {
-        "maxLambdaSize": "50mb"
-      }
-    }
-  ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/main.py"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/ui/$1"
+      "source": "/api/(.*)",
+      "destination": "$NEXT_PUBLIC_API_URL/api/$1"
     }
   ],
   "env": {
-    "REDIS_URL": "@redis_url",
-    "SUPABASE_URL": "@supabase_url", 
-    "SUPABASE_SERVICE_ROLE_KEY": "@supabase_service_role_key",
-    "OPENAI_API_KEY": "@openai_api_key"
-  },
-  "functions": {
-    "main.py": {
-      "maxDuration": 30
-    }
+    "NEXT_PUBLIC_API_URL": "@next_public_api_url",
+    "NEXT_PUBLIC_SUPABASE_URL": "@next_public_supabase_url", 
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "@next_public_supabase_anon_key",
+    "NEXT_PUBLIC_WS_URL": "@next_public_ws_url"
   }
 }
