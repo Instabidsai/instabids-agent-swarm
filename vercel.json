@@ -5,8 +5,36 @@
       "src": "ui/package.json",
       "use": "@vercel/next",
       "config": {
-        "zeroConfig": true
+        "distDir": ".next"
+      }
+    },
+    {
+      "src": "main.py",
+      "use": "@vercel/python",
+      "config": {
+        "maxLambdaSize": "50mb"
       }
     }
-  ]
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/main.py"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/ui/$1"
+    }
+  ],
+  "env": {
+    "REDIS_URL": "@redis_url",
+    "SUPABASE_URL": "@supabase_url", 
+    "SUPABASE_SERVICE_ROLE_KEY": "@supabase_service_role_key",
+    "OPENAI_API_KEY": "@openai_api_key"
+  },
+  "functions": {
+    "main.py": {
+      "maxDuration": 30
+    }
+  }
 }
