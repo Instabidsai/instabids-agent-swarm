@@ -1,0 +1,18 @@
+{
+  "buildCommand": "cd ui && npm run build",
+  "outputDirectory": "ui/.next",
+  "installCommand": "cd ui && npm install",
+  "devCommand": "cd ui && npm run dev",
+  "framework": "nextjs",
+  "functions": {
+    "app/api/**/*.js": {
+      "runtime": "@vercel/node"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/$1"
+    }
+  ]
+}
