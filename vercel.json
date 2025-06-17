@@ -3,22 +3,17 @@
   "builds": [
     {
       "src": "ui/package.json",
-      "use": "@vercel/next",
-      "config": {
-        "distDir": ".next"
-      }
+      "use": "@vercel/next"
     }
   ],
-  "rewrites": [
+  "routes": [
     {
-      "source": "/api/(.*)",
-      "destination": "https://instabids-agent-swarm-8k5am.ondigitalocean.app/$1"
+      "src": "/api/(.*)",
+      "dest": "https://instabids-agent-swarm-8k5am.ondigitalocean.app/api/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "ui/$1"
     }
-  ],
-  "env": {
-    "NEXT_PUBLIC_API_URL": "@next_public_api_url",
-    "NEXT_PUBLIC_SUPABASE_URL": "@next_public_supabase_url", 
-    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "@next_public_supabase_anon_key",
-    "NEXT_PUBLIC_WS_URL": "@next_public_ws_url"
-  }
+  ]
 }
