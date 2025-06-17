@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "buildCommand": "cd ui && npm ci && npm run build",
-  "outputDirectory": "ui/.next",
-  "installCommand": "cd ui && npm ci",
+  "buildCommand": "npm ci && npm run build",
+  "outputDirectory": ".next",
+  "installCommand": "npm ci",
   "framework": "nextjs",
+  "rootDirectory": "ui",
   "rewrites": [
     {
       "source": "/api/(.*)",
