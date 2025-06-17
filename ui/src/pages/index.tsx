@@ -1,59 +1,28 @@
-import React, { useState } from 'react';
-import Image from 'next/image';
-import { motion } from 'framer-motion';
+// ui/src/pages/index.tsx
+import React from 'react';
 import { ProjectIntakeForm } from '@/components/ProjectIntakeForm';
 import { AgentSwarmVisualizer } from '@/components/AgentSwarmVisualizer';
 
 const HomePage = () => {
-    const [projectId, setProjectId] = useState<string | null>(null);
-
-    const handleSubmission = (id: string) => {
-        setProjectId(id);
-    };
-
     return (
-        <div className="min-h-screen w-full flex flex-col items-center justify-center p-4 font-sans text-gray-200">
-            <main className="w-full max-w-3xl mx-auto flex flex-col items-center text-center">
-                
-                <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
-                    <Image
-                        src="/logo.png"
-                        alt="InstaBids Logo"
-                        width={150}
-                        height={150}
-                        className="mb-6"
-                        priority
-                    />
-                </motion.div>
-
-                <motion.h1 
-                    initial={{ opacity: 0, y: 20 }} 
-                    animate={{ opacity: 1, y: 0 }} 
-                    transition={{ duration: 0.7, delay: 0.2 }}
-                    className="text-4xl md:text-5xl font-bold text-white mb-4"
-                >
-                    Build Your Vision
-                </motion.h1>
-
-                <motion.p 
-                    initial={{ opacity: 0, y: 20 }} 
-                    animate={{ opacity: 1, y: 0 }} 
-                    transition={{ duration: 0.7, delay: 0.4 }}
-                    className="text-lg text-gray-400 mb-12 max-w-xl"
-                >
-                    Describe your project, and our agent swarm will handle the rest.
-                </motion.p>
-                
-                <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                    <div className="w-full">
-                        <ProjectIntakeForm onSubmissionSuccess={handleSubmission} />
+        <div className="min-h-screen bg-gray-100 font-sans">
+            <div className="container mx-auto p-4 sm:p-8">
+                <header className="text-center mb-12">
+                    <h1 className="text-4xl md:text-5xl font-bold text-gray-800">Welcome to Instabids</h1>
+                    <p className="text-lg text-gray-600 mt-3 max-w-2xl mx-auto">
+                        Describe your project, and our AI agent swarm will handle everything from scoping and security to finding the perfect contractor.
+                    </p>
+                </header>
+                <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+                    <div className="lg:col-span-3 bg-white p-6 sm:p-8 rounded-xl shadow-lg border border-gray-200">
+                        <ProjectIntakeForm />
                     </div>
-                    <div className="w-full h-full">
+                    <div className="lg:col-span-2 bg-gray-50 p-6 sm:p-8 rounded-xl border border-gray-200">
+                        <h2 className="text-2xl font-semibold mb-4 text-center text-gray-700">Live Agent Swarm Activity</h2>
                         <AgentSwarmVisualizer />
                     </div>
                 </div>
-
-            </main>
+            </div>
         </div>
     );
 };
