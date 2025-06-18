@@ -9,9 +9,9 @@
 // - Display a visual overlay of the agent's vision analysis for user feedback.
 
 import React, { useState, useEffect, useRef } from 'react';
-import { useLivekit } from '../hooks/useLivekit';
+import { useLivekit, type UseLivekitReturn } from '../hooks/useLivekit';
 import { LocalVideoTrack } from 'livekit-client';
-import { useAgentSwarmSocket } from '../hooks/useAgentSwarmSocket'; // Assuming this hook exists for WebSocket communication
+import { useAgentSwarmSocket, type AgentSwarmSocketState } from '../hooks/useAgentSwarmSocket'; // Assuming this hook exists for WebSocket communication
 
 const LIVEKIT_SERVER_URL = process.env.NEXT_PUBLIC_LIVEKIT_URL || 'ws://localhost:7881';
 
@@ -41,13 +41,15 @@ export const LiveVideoChat: React.FC<LiveVideoChatProps> = ({ projectId, userId 
   const [sessionStarted, setSessionStarted] = useState(false);
   const [agentResponse, setAgentResponse] = useState<string>('');
   
-  const { lastMessage } = useAgentSwarmSocket(projectId);
+  const swarmSocketData: AgentSwarmSocketState = useAgentSwarmSocket(projectId);
+  const { lastMessage } = swarmSocketData;
 
-  const { connectToRoom, disconnectFromRoom, isConnected, localVideoTrack } = useLivekit({
+  const livekitData: UseLivekitReturn = useLivekit({
     serverUrl: LIVEKIT_SERVER_URL,
     token: token,
     roomName: projectId,
   });
+  const { connectToRoom, disconnectFromRoom, isConnected, localVideoTrack } = livekitData;
 
   const getToken = async () => {
     try {
