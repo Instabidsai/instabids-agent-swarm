@@ -28,7 +28,7 @@ export default function Home() {
             <LiveProjectAnalysis />
           </div>
         </div>
-      </div>
+      </main>
       
       {/* This component registers the Human-in-the-Loop action but renders nothing itself until called by the agent */}
       <ProjectApprovalAction />
