@@ -1,22 +1,18 @@
-// This context provides a single, shared source of truth for the agent's state,
-// making it available to any component in the application. It uses the `useCoAgent`
-// hook to establish the real-time, bidirectional connection to the backend agent swarm.
-
 import React, { createContext, useContext, ReactNode } from 'react';
-import { useCoAgent, CoAgentState } from '@copilotkit/react-core';
-import { AgentSwarmState, ProjectState } from '../types/agent-types'; // We will create this file next.
+import { useCoAgent, UseCoAgentReturn } from '@copilotkit/react-core'; // CORRECTED IMPORT
+import { AgentSwarmState, ProjectState } from '../types/agent-types';
 
-// Define the shape of our combined agent state
 interface InstabidsAgentContextState {
   swarm: AgentSwarmState;
   project: ProjectState;
 }
 
-const AgentSwarmContext = createContext<CoAgentState<InstabidsAgentContextState> | undefined>(undefined);
+// CORRECTED TYPE USAGE
+const AgentSwarmContext = createContext<UseCoAgentReturn<InstabidsAgentContextState> | undefined>(undefined);
 
 export const AgentSwarmProvider = ({ children }: { children: ReactNode }) => {
   const agentState = useCoAgent<InstabidsAgentContextState>({
-    name: "instabids_swarm_supervisor", // Connect to the main supervisor agent
+    name: "instabids_swarm_supervisor",
     initialState: {
       swarm: {
         agents: [],
