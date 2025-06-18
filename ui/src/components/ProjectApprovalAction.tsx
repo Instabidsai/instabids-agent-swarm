@@ -1,7 +1,3 @@
-// This component defines a Human-in-the-Loop action. This final version
-// fixes the TypeScript error by explicitly defining the `parameters` array
-// for the `useCopilotAction` hook to match the `ApprovalArgs` interface.
-
 import React from 'react';
 import { useCopilotAction, ActionRenderProps } from '@copilotkit/react-core';
 import { Check, X } from 'lucide-react';
@@ -46,8 +42,6 @@ export const ProjectApprovalAction = () => {
   useCopilotAction<ApprovalArgs>({
     name: "requestProjectApproval",
     description: "Pauses the workflow and asks the user to approve the generated project plan.",
-    // CORRECTED: Explicitly define the parameters to match the ApprovalArgs interface.
-    // This resolves the `does not satisfy the constraint` error.
     parameters: [
       { name: "summary", type: "string", description: "A brief summary of the project plan.", required: true },
       { name: "estimatedCost", type: "number", description: "The estimated cost of the project.", required: true },
