@@ -1,6 +1,6 @@
-// This component defines a Human-in-the-Loop action. When the backend agent
-// calls `requestProjectApproval`, this component will be rendered in the UI,
-// pausing the entire workflow until the user clicks "Approve" or "Reject".
+// This component defines a Human-in-the-Loop action. This version corrects the
+// TypeScript error by changing `ActionRenderProps<ApprovalArgs, boolean>` to
+// `ActionRenderProps<ApprovalArgs>`, which matches the library version's expectation.
 
 import React from 'react';
 import { useCopilotAction, ActionRenderProps } from '@copilotkit/react-core';
@@ -13,7 +13,8 @@ interface ApprovalArgs {
 }
 
 // The UI component that will be rendered for the user to interact with.
-const ApprovalDialog = ({ args, status, respond }: ActionRenderProps<ApprovalArgs, boolean>) => {
+// CORRECTED TYPE: ActionRenderProps<ApprovalArgs> now has only one generic argument.
+const ApprovalDialog = ({ args, status, respond }: ActionRenderProps<ApprovalArgs>) => {
   // Only render when the agent is waiting for a response.
   if (status !== 'executing') return null;
 
@@ -46,7 +47,8 @@ const ApprovalDialog = ({ args, status, respond }: ActionRenderProps<ApprovalArg
 
 // The hook that registers the action with the agent system.
 export const ProjectApprovalAction = () => {
-  useCopilotAction<ApprovalArgs, boolean>({
+  // CORRECTED TYPE: The second generic argument `boolean` is removed.
+  useCopilotAction<ApprovalArgs>({
     name: "requestProjectApproval",
     description: "Pauses the workflow and asks the user to approve the generated project plan.",
     parameters: [
