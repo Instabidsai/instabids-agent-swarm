@@ -1,0 +1,4 @@
+# Force fresh Vercel build - Updated: 2025-06-18 ${new Date().toISOString()}
+
+This file exists purely to trigger fresh Vercel deployments when the backend infrastructure changes.
+Last deployment trigger: June 18, 2025 - Backend now fully operational on DigitalOcean.
