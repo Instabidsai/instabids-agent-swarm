@@ -24,7 +24,16 @@ export interface UseLivekitProps {
   roomName: string;
 }
 
-export function useLivekit({ serverUrl, token, roomName }: UseLivekitProps) {
+export interface UseLivekitReturn {
+  room: Room | undefined;
+  isConnected: boolean;
+  connectToRoom: () => Promise<void>;
+  disconnectFromRoom: () => void;
+  localVideoTrack: LocalVideoTrack | undefined;
+  localAudioTrack: LocalAudioTrack | undefined;
+}
+
+export function useLivekit({ serverUrl, token, roomName }: UseLivekitProps): UseLivekitReturn {
   const [room, setRoom] = useState<Room | undefined>(undefined);
   const [isConnected, setIsConnected] = useState(false);
   const [localVideoTrack, setLocalVideoTrack] = useState<LocalVideoTrack | undefined>(undefined);
