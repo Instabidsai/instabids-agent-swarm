@@ -1,21 +1,17 @@
+// This component defines a Human-in-the-Loop action. This final version
+// fixes the TypeScript error by removing the incorrect 'Parameter' import and
+// correctly defining the parameters array inline.
+
 import React from 'react';
-import { useCopilotAction, ActionRenderProps, Parameter } from '@copilotkit/react-core';
+// CORRECTED: The non-existent 'Parameter' type has been removed from the import.
+import { useCopilotAction, ActionRenderProps } from '@copilotkit/react-core';
 import { Check, X } from 'lucide-react';
 
-// Define the parameters array that satisfies the constraint.
-// This is the source of truth for the action's arguments.
-const approvalParameters: Parameter[] = [
-  { name: "summary", type: "string", description: "A brief summary of the project plan.", required: true },
-  { name: "estimatedCost", type: "number", description: "The estimated cost of the project.", required: true },
-  { name: "estimatedTimeline", type: "string", description: "The estimated timeline for project completion.", required: true },
-];
-
-// Define a type alias for the arguments based on the parameters.
-type ApprovalArgs = {
-  summary: string;
+interface ApprovalArgs {
   estimatedCost: number;
   estimatedTimeline: string;
-};
+  summary: string;
+}
 
 const ApprovalDialog = (props: ActionRenderProps<ApprovalArgs>) => {
   if (props.status !== 'executing') return null;
@@ -48,11 +44,15 @@ const ApprovalDialog = (props: ActionRenderProps<ApprovalArgs>) => {
 };
 
 export const ProjectApprovalAction = () => {
-  useCopilotAction({
+  useCopilotAction<ApprovalArgs>({
     name: "requestProjectApproval",
     description: "Pauses the workflow and asks the user to approve the generated project plan.",
-    // Use the correctly defined parameters array.
-    parameters: approvalParameters,
+    // The parameters are defined directly here, which is the correct pattern.
+    parameters: [
+      { name: "summary", type: "string", description: "A brief summary of the project plan.", required: true },
+      { name: "estimatedCost", type: "number", description: "The estimated cost of the project.", required: true },
+      { name: "estimatedTimeline", type: "string", description: "The estimated timeline for project completion.", required: true },
+    ],
     renderAndWaitForResponse: ApprovalDialog,
   });
 
