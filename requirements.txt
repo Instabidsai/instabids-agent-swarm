@@ -5,7 +5,7 @@ pydantic>=2.5.0
 python-dotenv>=1.0.0
 
 # CopilotKit for AI Chat Backend
-copilot-kit==0.1.0
+copilot-kit
 
 # Agent & AI Frameworks
 langchain>=0.1.0
