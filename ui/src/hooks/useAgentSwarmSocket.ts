@@ -9,7 +9,7 @@ interface AgentMessage {
   [key: string]: any;
 }
 
-interface AgentSwarmSocketState {
+export interface AgentSwarmSocketState {
   lastMessage: AgentMessage | null;
   connectionStatus: 'connecting' | 'connected' | 'disconnected';
 }
