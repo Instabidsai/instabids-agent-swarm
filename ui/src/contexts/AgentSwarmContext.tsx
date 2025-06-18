@@ -1,5 +1,5 @@
 import React, { createContext, useContext, ReactNode } from 'react';
-import { useCoAgent, UseCoAgentReturn } from '@copilotkit/react-core'; // CORRECTED IMPORT
+import { useCoAgent } from '@copilotkit/react-core';
 import { AgentSwarmState, ProjectState } from '../types/agent-types';
 
 interface InstabidsAgentContextState {
@@ -8,7 +8,8 @@ interface InstabidsAgentContextState {
 }
 
 // CORRECTED TYPE USAGE
-const AgentSwarmContext = createContext<UseCoAgentReturn<InstabidsAgentContextState> | undefined>(undefined);
+type CoAgentReturn<T> = ReturnType<typeof useCoAgent<T>>;
+const AgentSwarmContext = createContext<CoAgentReturn<InstabidsAgentContextState> | undefined>(undefined);
 
 export const AgentSwarmProvider = ({ children }: { children: ReactNode }) => {
   const agentState = useCoAgent<InstabidsAgentContextState>({

@@ -4,17 +4,20 @@
 
 import React from 'react';
 // CORRECTED: The non-existent 'Parameter' type has been removed from the import.
-import { useCopilotAction, ActionRenderProps } from '@copilotkit/react-core';
+import { useCopilotAction, ActionRenderPropsWait } from '@copilotkit/react-core';
+import type { Parameter, MappedParameterTypes } from '@copilotkit/shared';
 import { Check, X } from 'lucide-react';
 
-interface ApprovalArgs {
-  estimatedCost: number;
-  estimatedTimeline: string;
-  summary: string;
-}
+const parameters = [
+  { name: "summary", type: "string", description: "A brief summary of the project plan.", required: true },
+  { name: "estimatedCost", type: "number", description: "The estimated cost of the project.", required: true },
+  { name: "estimatedTimeline", type: "string", description: "The estimated timeline for project completion.", required: true },
+] as const satisfies Parameter[];
 
-const ApprovalDialog = (props: ActionRenderProps<ApprovalArgs>) => {
-  if (props.status !== 'executing') return null;
+type ApprovalArgs = MappedParameterTypes<typeof parameters>;
+
+const ApprovalDialog = (props: ActionRenderPropsWait<typeof parameters>) => {
+  if (props.status !== 'executing') return <></>;
 
   return (
     <div className="p-4 border border-yellow-300 bg-yellow-50 rounded-lg shadow-lg">
@@ -44,15 +47,10 @@ const ApprovalDialog = (props: ActionRenderProps<ApprovalArgs>) => {
 };
 
 export const ProjectApprovalAction = () => {
-  useCopilotAction<ApprovalArgs>({
+  useCopilotAction<typeof parameters>({
     name: "requestProjectApproval",
     description: "Pauses the workflow and asks the user to approve the generated project plan.",
-    // The parameters are defined directly here, which is the correct pattern.
-    parameters: [
-      { name: "summary", type: "string", description: "A brief summary of the project plan.", required: true },
-      { name: "estimatedCost", type: "number", description: "The estimated cost of the project.", required: true },
-      { name: "estimatedTimeline", type: "string", description: "The estimated timeline for project completion.", required: true },
-    ],
+    parameters,
     renderAndWaitForResponse: ApprovalDialog,
   });
 
