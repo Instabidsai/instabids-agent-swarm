@@ -8,7 +8,7 @@ const nextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: 'https://instabids-agent-swarm-8k5am.ondigitalocean.app/:path*', // Proxy to DigitalOcean backend
+        destination: 'https://instabids-sales-bot-api-67gkc.ondigitalocean.app/api/:path*',
       },
     ]
   },
