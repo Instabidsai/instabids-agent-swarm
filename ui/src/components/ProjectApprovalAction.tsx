@@ -1,6 +1,6 @@
-// This component defines a Human-in-the-Loop action. This version corrects the
-// TypeScript error by changing `ActionRenderProps<ApprovalArgs, boolean>` to
-// `ActionRenderProps<ApprovalArgs>`, which matches the library version's expectation.
+// This component defines a Human-in-the-Loop action. This final version
+// fixes the TypeScript error by adding a null-check to the `respond` function
+// before calling it, which resolves the "Property 'respond' does not exist" error.
 
 import React from 'react';
 import { useCopilotAction, ActionRenderProps } from '@copilotkit/react-core';
@@ -13,7 +13,6 @@ interface ApprovalArgs {
 }
 
 // The UI component that will be rendered for the user to interact with.
-// CORRECTED TYPE: ActionRenderProps<ApprovalArgs> now has only one generic argument.
 const ApprovalDialog = ({ args, status, respond }: ActionRenderProps<ApprovalArgs>) => {
   // Only render when the agent is waiting for a response.
   if (status !== 'executing') return null;
@@ -29,13 +28,15 @@ const ApprovalDialog = ({ args, status, respond }: ActionRenderProps<ApprovalArg
       </div>
       <div className="mt-4 flex justify-end space-x-2">
         <button
-          onClick={() => respond(false)}
+          // CORRECTED: Check if `respond` exists before calling it.
+          onClick={() => respond && respond(false)}
           className="px-4 py-2 rounded-md bg-red-500 text-white hover:bg-red-600 flex items-center"
         >
           <X className="h-4 w-4 mr-1" /> Reject
         </button>
         <button
-          onClick={() => respond(true)}
+          // CORRECTED: Check if `respond` exists before calling it.
+          onClick={() => respond && respond(true)}
           className="px-4 py-2 rounded-md bg-green-500 text-white hover:bg-green-600 flex items-center"
         >
           <Check className="h-4 w-4 mr-1" /> Approve
@@ -47,7 +48,6 @@ const ApprovalDialog = ({ args, status, respond }: ActionRenderProps<ApprovalArg
 
 // The hook that registers the action with the agent system.
 export const ProjectApprovalAction = () => {
-  // CORRECTED TYPE: The second generic argument `boolean` is removed.
   useCopilotAction<ApprovalArgs>({
     name: "requestProjectApproval",
     description: "Pauses the workflow and asks the user to approve the generated project plan.",
