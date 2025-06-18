@@ -1,17 +1,7 @@
-// This new React component is the main UI for the "Live Walkthrough" feature.
-//
-// Key Responsibilities:
-// - Provide a "Start Live Walkthrough" button to initiate the session.
-// - Use the `useLivekit` hook to manage the WebRTC connection.
-// - Render the user's local video feed so they can see what the agent "sees".
-// - Subscribe to the `ai:agent_response` Redis stream (via a WebSocket bridge) to get the AI's text responses.
-// - Use the browser's built-in SpeechSynthesis API to speak the agent's responses aloud.
-// - Display a visual overlay of the agent's vision analysis for user feedback.
-
 import React, { useState, useEffect, useRef } from 'react';
-import { useLivekit, type UseLivekitReturn } from '../hooks/useLivekit';
+import { useLivekit } from '../hooks/useLivekit';
 import { LocalVideoTrack } from 'livekit-client';
-import { useAgentSwarmSocket, type AgentSwarmSocketState } from '../hooks/useAgentSwarmSocket'; // Assuming this hook exists for WebSocket communication
+import { useAgentSwarmSocket, type AgentSwarmSocketState } from '../hooks/useAgentSwarmSocket'; // CORRECTED IMPORT
 
 const LIVEKIT_SERVER_URL = process.env.NEXT_PUBLIC_LIVEKIT_URL || 'ws://localhost:7881';
 
@@ -35,21 +25,18 @@ const VideoComponent = ({ track }: { track: LocalVideoTrack }) => {
   return <video ref={videoEl} width="100%" height="auto" autoPlay muted />;
 };
 
-
 export const LiveVideoChat: React.FC<LiveVideoChatProps> = ({ projectId, userId }) => {
   const [token, setToken] = useState<string>('');
   const [sessionStarted, setSessionStarted] = useState(false);
   const [agentResponse, setAgentResponse] = useState<string>('');
   
-  const swarmSocketData: AgentSwarmSocketState = useAgentSwarmSocket(projectId);
-  const { lastMessage } = swarmSocketData;
+  const { lastMessage }: AgentSwarmSocketState = useAgentSwarmSocket(projectId);
 
-  const livekitData: UseLivekitReturn = useLivekit({
+  const { connectToRoom, disconnectFromRoom, isConnected, localVideoTrack } = useLivekit({
     serverUrl: LIVEKIT_SERVER_URL,
     token: token,
     roomName: projectId,
   });
-  const { connectToRoom, disconnectFromRoom, isConnected, localVideoTrack } = livekitData;
 
   const getToken = async () => {
     try {
@@ -106,7 +93,7 @@ export const LiveVideoChat: React.FC<LiveVideoChatProps> = ({ projectId, userId 
           disabled={sessionStarted}
           className="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
         >
-          {sessionStarted ? 'Connecting...' : 'Start Live Walkthrough'}
+          {sessionStarted ? 'Connecting...' : 'Start Walkthrough'}
         </button>
       ) : (
         <button
