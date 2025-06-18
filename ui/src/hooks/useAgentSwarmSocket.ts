@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
-interface AgentMessage {
+// EXPORT ADDED HERE
+export interface AgentMessage {
   stream: string;
   data: {
     text_response?: string;
@@ -9,6 +10,7 @@ interface AgentMessage {
   [key: string]: any;
 }
 
+// EXPORT ADDED HERE
 export interface AgentSwarmSocketState {
   lastMessage: AgentMessage | null;
   connectionStatus: 'connecting' | 'connected' | 'disconnected';
