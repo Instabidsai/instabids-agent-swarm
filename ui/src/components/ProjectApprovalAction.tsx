@@ -1,46 +1,33 @@
 import React from 'react';
-import { useCopilotAction, ActionRenderProps } from '@copilotkit/react-core';
+import { useCopilotAction, ActionRenderProps, Parameter } from '@copilotkit/react-core';
 import { Check, X } from 'lucide-react';
 
-// Define the parameters correctly for useCopilotAction
-const approvalParameters = [
-  {
-    name: 'summary',
-    type: 'string' as const,
-    description: 'A brief summary of the project plan.',
-    required: true,
-  },
-  {
-    name: 'estimatedCost',
-    type: 'number' as const,
-    description: 'The estimated cost of the project.',
-    required: true,
-  },
-  {
-    name: 'estimatedTimeline',
-    type: 'string' as const,
-    description: 'The estimated timeline for project completion.',
-    required: true,
-  },
+// Define the parameters array that satisfies the constraint.
+// This is the source of truth for the action's arguments.
+const approvalParameters: Parameter[] = [
+  { name: "summary", type: "string", description: "A brief summary of the project plan.", required: true },
+  { name: "estimatedCost", type: "number", description: "The estimated cost of the project.", required: true },
+  { name: "estimatedTimeline", type: "string", description: "The estimated timeline for project completion.", required: true },
 ];
 
-const ApprovalDialog = (props: ActionRenderProps<typeof approvalParameters>) => {
-  if (props.status !== 'executing') return null;
+// Define a type alias for the arguments based on the parameters.
+type ApprovalArgs = {
+  summary: string;
+  estimatedCost: number;
+  estimatedTimeline: string;
+};
 
-  const summary = props.args?.summary || 'No summary provided';
-  const estimatedCost = props.args?.estimatedCost || 0;
-  const estimatedTimeline = props.args?.estimatedTimeline || 'No timeline provided';
+const ApprovalDialog = (props: ActionRenderProps<ApprovalArgs>) => {
+  if (props.status !== 'executing') return null;
 
   return (
     <div className="p-4 border border-yellow-300 bg-yellow-50 rounded-lg shadow-lg">
       <h3 className="font-bold text-gray-800">Project Plan Approval Required</h3>
-      <p className="mt-2 text-gray-600">
-        Please review the AI-generated plan before we proceed to contractor matching.
-      </p>
+      <p className="mt-2 text-gray-600">Please review the AI-generated plan before we proceed to contractor matching.</p>
       <div className="mt-4 p-3 bg-white rounded border">
-        <p><strong>Summary:</strong> {summary}</p>
-        <p><strong>Estimated Cost:</strong> ${estimatedCost.toLocaleString()}</p>
-        <p><strong>Estimated Timeline:</strong> {estimatedTimeline}</p>
+        <p><strong>Summary:</strong> {props.args.summary}</p>
+        <p><strong>Estimated Cost:</strong> ${props.args.estimatedCost.toLocaleString()}</p>
+        <p><strong>Estimated Timeline:</strong> {props.args.estimatedTimeline}</p>
       </div>
       <div className="mt-4 flex justify-end space-x-2">
         <button
@@ -64,6 +51,7 @@ export const ProjectApprovalAction = () => {
   useCopilotAction({
     name: "requestProjectApproval",
     description: "Pauses the workflow and asks the user to approve the generated project plan.",
+    // Use the correctly defined parameters array.
     parameters: approvalParameters,
     renderAndWaitForResponse: ApprovalDialog,
   });
