@@ -1,0 +1,3 @@
+DEPLOYMENT TRIGGER: ${new Date().toISOString()}
+This file forces a fresh Vercel deployment to activate the correct proxy configuration.
+Backend is confirmed operational at: instabids-api-l7xjz5xci-instabidsai.ondigitalocean.app
