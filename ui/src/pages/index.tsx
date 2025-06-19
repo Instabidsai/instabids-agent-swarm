@@ -1,7 +1,8 @@
 import { useState } from 'react';
-// The curly braces {} around BOTH components are the fix.
+// CORRECT: ConversationalIntake has curly braces (named export)
 import { ConversationalIntake } from '@/components/ConversationalIntake';
-import { LiveIntakeAnalysis } from '@/components/LiveIntakeAnalysis';
+// CORRECT: LiveIntakeAnalysis has NO curly braces (default export)
+import LiveIntakeAnalysis from '@/components/LiveIntakeAnalysis';
 
 export default function Home() {
   const [analysis, setAnalysis] = useState(null);
@@ -15,7 +16,6 @@ export default function Home() {
       </header>
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Column 1: Conversational Intake */}
           <div className="bg-white p-6 rounded-lg shadow">
             <h2 className="text-xl font-semibold mb-4">1. Describe Your Project</h2>
             <p className="text-sm text-gray-600 mb-4">
@@ -26,7 +26,6 @@ export default function Home() {
             <ConversationalIntake onAnalysisUpdate={setAnalysis} />
           </div>
 
-          {/* Column 2: Live Analysis */}
           <div className="bg-white p-6 rounded-lg shadow">
             <h2 className="text-xl font-semibold mb-4">2. Live AI Analysis</h2>
             <p className="text-sm text-gray-600 mb-4">
