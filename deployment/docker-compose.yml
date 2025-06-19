@@ -52,8 +52,150 @@ services:
       db:
         condition: service_healthy
 
-  # NEW SERVICE: LiveKit Media Server
-  # Handles the WebRTC connections for real-time video and audio.
+  # CORE AGENT WORKERS - These were missing and are now FIXED!
+  homeowner-intake-agent:
+    build:
+      context: .
+      dockerfile: deployment/Dockerfile
+    container_name: instabids-homeowner-intake-agent
+    command: python -c "
+      import asyncio
+      from agents.homeowner_intake.intake_agent import HomeownerIntakeAgent
+      
+      async def main():
+          agent = HomeownerIntakeAgent()
+          await agent.start_processing()
+      
+      asyncio.run(main())
+    "
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - SUPABASE_URL=https://tqthesdjiewlcxpvqmjl.supabase.co
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - AGENT_TYPE=homeowner_intake
+      - AGENT_ID=homeowner-intake-001
+    restart: unless-stopped
+    depends_on:
+      - redis
+      - db
+    networks:
+      - agent-swarm
+
+  project-scope-agent:
+    build:
+      context: .
+      dockerfile: deployment/Dockerfile
+    container_name: instabids-project-scope-agent
+    command: python -c "
+      import asyncio
+      from agents.project_scope.scope_agent import ProjectScopeAgent
+      
+      async def main():
+          agent = ProjectScopeAgent()
+          await agent.start_processing()
+      
+      asyncio.run(main())
+    "
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - SUPABASE_URL=https://tqthesdjiewlcxpvqmjl.supabase.co
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - AGENT_TYPE=project_scope
+      - AGENT_ID=project-scope-001
+    restart: unless-stopped
+    depends_on:
+      - redis
+      - db
+    networks:
+      - agent-swarm
+
+  communication-filter-agent:
+    build:
+      context: .
+      dockerfile: deployment/Dockerfile
+    container_name: instabids-communication-filter-agent
+    command: python -c "
+      import asyncio
+      from agents.communication_filter.filter_agent import CommunicationFilterAgent
+      
+      async def main():
+          agent = CommunicationFilterAgent()
+          await agent.start_processing()
+      
+      asyncio.run(main())
+    "
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - SUPABASE_URL=https://tqthesdjiewlcxpvqmjl.supabase.co
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+      - AGENT_TYPE=communication_filter
+      - AGENT_ID=communication-filter-001
+    restart: unless-stopped
+    depends_on:
+      - redis
+      - db
+    networks:
+      - agent-swarm
+
+  payment-gate-agent:
+    build:
+      context: .
+      dockerfile: deployment/Dockerfile
+    container_name: instabids-payment-gate-agent
+    command: python -c "
+      import asyncio
+      from agents.payment_gate.payment_agent import PaymentGateAgent
+      
+      async def main():
+          agent = PaymentGateAgent()
+          await agent.start_processing()
+      
+      asyncio.run(main())
+    "
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - SUPABASE_URL=https://tqthesdjiewlcxpvqmjl.supabase.co
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+      - AGENT_TYPE=payment_gate
+      - AGENT_ID=payment-gate-001
+    restart: unless-stopped
+    depends_on:
+      - redis
+      - db
+    networks:
+      - agent-swarm
+
+  ui-generator-agent:
+    build:
+      context: .
+      dockerfile: deployment/Dockerfile
+    container_name: instabids-ui-generator-agent
+    command: python -c "
+      import asyncio
+      from agents.ui_generator.ui_agent import UIGeneratorAgent
+      
+      async def main():
+          agent = UIGeneratorAgent()
+          await agent.start_processing()
+      
+      asyncio.run(main())
+    "
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - SUPABASE_URL=https://tqthesdjiewlcxpvqmjl.supabase.co
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+      - AGENT_TYPE=ui_generator
+      - AGENT_ID=ui-generator-001
+    restart: unless-stopped
+    depends_on:
+      - redis
+      - db
+    networks:
+      - agent-swarm
+
+  # LiveKit Media Server for real-time video/audio
   livekit:
     image: livekit/livekit-server:latest
     container_name: instabids-livekit-server
@@ -63,7 +205,7 @@ services:
       - "7881:7881"    # WebRTC
       - "7882:7882/udp" # TURN/UDP
     environment:
-      LIVEKIT_KEYS: "devkey: secret" # Use environment variables in production
+      LIVEKIT_KEYS: "devkey: secret"
       LIVEKIT_PORT: 7880
       LIVEKIT_RTC_PORT: 7881
     networks:
@@ -71,12 +213,11 @@ services:
     volumes:
       - ./config/livekit.yaml:/etc/livekit.yaml
 
-  # NEW AGENT: Media Processor Agent
-  # Dedicated agent to process incoming video/audio streams.
+  # Media Processor Agent for video/audio processing
   media-processor-agent:
     build:
       context: .
-      dockerfile: ./docker/agents/media-processor/Dockerfile
+      dockerfile: deployment/Dockerfile
     container_name: instabids-media-processor-agent
     restart: unless-stopped
     environment:
@@ -86,7 +227,7 @@ services:
       LIVEKIT_API_SECRET: "secret"
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       AGENT_TYPE: media_processor
-      AGENT_ID: media-processor-${AGENT_INSTANCE:-001}
+      AGENT_ID: media-processor-001
     volumes:
       - agent-logs:/app/logs
     networks:
