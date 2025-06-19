@@ -1,37 +1,41 @@
-// This modification completely redesigns the main page.
-// It removes the old static form and introduces a modern, two-column layout.
-// The left column will house the new conversational chat interface,
-// and the right column will display real-time agent activity and analysis.
-
-import { ConversationalIntake } from "@/components/ConversationalIntake";
-import { LiveProjectAnalysis } from "@/components/LiveProjectAnalysis";
-import { ProjectApprovalAction } from "@/components/ProjectApprovalAction";
+import { useState } from 'react';
+import ConversationalIntake from '@/components/ConversationalIntake';
+import LiveIntakeAnalysis from '@/components/LiveIntakeAnalysis';
 
 export default function Home() {
-  return (
-    <>
-      <main className="flex min-h-screen flex-col items-center justify-center p-4 md:p-12 lg:p-24 bg-gray-100 dark:bg-gray-900">
-        <div className="z-10 w-full max-w-7xl items-center justify-between font-mono text-sm lg:flex mb-8">
-          <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/50">
-            InstaBids Agent Swarm
-          </p>
-        </div>
+  const [analysis, setAnalysis] = useState(null);
 
-        <div className="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Left Column: The Conversational UI */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6">
-            <ConversationalIntake />
+  return (
+    <div className="min-h-screen bg-gray-50 text-gray-800">
+      <header className="bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
+          <h1 className="text-2xl font-bold leading-tight text-gray-900">InstaBids Agent Swarm</h1>
+        </div>
+      </header>
+      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Column 1: Conversational Intake */}
+          <div className="bg-white p-6 rounded-lg shadow">
+            <h2 className="text-xl font-semibold mb-4">1. Describe Your Project</h2>
+            <p className="text-sm text-gray-600 mb-4">
+              Start by telling our AI assistant about your project. You can type, or soon, use
+              your voice and camera. The more details you provide, the better our agent swarm
+              can understand your needs.
+            </p>
+            <ConversationalIntake onAnalysisUpdate={setAnalysis} />
           </div>
 
-          {/* Right Column: Live Agent Visualization */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6">
-            <LiveProjectAnalysis />
+          {/* Column 2: Live Analysis */}
+          <div className="bg-white p-6 rounded-lg shadow">
+            <h2 className="text-xl font-semibold mb-4">2. Live AI Analysis</h2>
+            <p className="text-sm text-gray-600 mb-4">
+              As you chat with our assistant, our agent swarm will analyze your needs in real-
+              time. Watch as it builds a structured understanding of your project below.
+            </p>
+            <LiveIntakeAnalysis analysis={analysis} />
           </div>
         </div>
       </main>
-      
-      {/* This component registers the Human-in-the-Loop action but renders nothing itself until called by the agent */}
-      <ProjectApprovalAction />
-    </>
+    </div>
   );
 }
