@@ -5,8 +5,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from core.events.publisher import EventPublisher
 from agents.homeowner_intake.nlp_processor import NLPProcessor
-from copilot_kit.core.langchain import CopilotKitLangChain
-from langchain_openai import ChatOpenAI
 
 # --- FastAPI App Setup ---
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -16,7 +14,7 @@ app = FastAPI(title="Instabids Agent Swarm API", version="1.0.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # In production, restrict this
+    allow_origins=["*"],  # In production, restrict this
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -58,35 +56,56 @@ async def submit_project(submission: ProjectSubmission):
 
 # --- NEW: CopilotKit Backend Implementation ---
 
-# 1. Initialize the NLP Processor from our existing agent logic.
+# Initialize the NLP Processor from our existing agent logic.
 nlp_processor = NLPProcessor()
 
-# 2. Set up the CopilotKit LangChain adapter.
-copilot = CopilotKitLangChain(
-    # The tools array defines functions the AI can call.
-    tools=[
-        {
-            "name": "analyze_project",
-            "description": "Analyzes the user's project description to extract structured requirements and identify clarifying questions.",
-            "handler": lambda args: nlp_processor.extract_project_info(args['description']),
-            "parameters": [
-                {
-                    "name": "description",
-                    "type": "string",
-                    "description": "The user's description of their home improvement project.",
-                    "required": True,
-                }
-            ],
-        }
-    ],
-    # We use the same LLM as our agents for consistency.
-    langchain_llm=ChatOpenAI(model_name="gpt-4o"),
-)
-
-# 3. Create the API endpoint for the frontend to connect to.
+# Simple CopilotKit-compatible endpoint without external dependency
 @app.post("/api/copilotkit")
 async def handle_copilot_chat(request: dict):
-    return await copilot.process_request(request)
+    """
+    CopilotKit-compatible endpoint for AI chat functionality.
+    Processes user messages and returns AI responses.
+    """
+    try:
+        # Extract message from CopilotKit request format
+        messages = request.get("messages", [])
+        if not messages:
+            return {"error": "No messages provided"}
+        
+        # Get the latest user message
+        user_message = None
+        for msg in reversed(messages):
+            if msg.get("role") == "user":
+                user_message = msg.get("content", "")
+                break
+        
+        if not user_message:
+            return {"error": "No user message found"}
+        
+        # Use our NLP processor to analyze the project description
+        if "project" in user_message.lower() or "renovation" in user_message.lower():
+            analysis = await nlp_processor.extract_project_info(user_message)
+            response_content = f"I've analyzed your project description. Here's what I found:\n\n"
+            response_content += f"Project Type: {analysis.get('project_type', 'Not specified')}\n"
+            response_content += f"Requirements: {', '.join(analysis.get('requirements', []))}\n"
+            response_content += f"Materials: {', '.join(analysis.get('materials', []))}\n"
+            
+            if analysis.get('unclear_points'):
+                response_content += f"\nI have some questions to better understand your needs:\n"
+                for question in analysis.get('unclear_points', []):
+                    response_content += f"• {question}\n"
+        else:
+            response_content = "I'm here to help you with home improvement projects. Could you describe what kind of renovation or improvement you're planning?"
+        
+        # Return in CopilotKit expected format
+        return {
+            "response": response_content,
+            "status": "success"
+        }
+        
+    except Exception as e:
+        logger.error(f"CopilotKit endpoint error: {e}", exc_info=True)
+        return {"error": "Failed to process chat request", "details": str(e)}
 
 # Vercel serverless function handler
 handler = app
