@@ -1,7 +1,7 @@
 import { useState } from 'react';
-// The curly braces {} around ConversationalIntake are the fix.
+// The curly braces {} around BOTH components are the fix.
 import { ConversationalIntake } from '@/components/ConversationalIntake';
-import LiveIntakeAnalysis from '@/components/LiveIntakeAnalysis';
+import { LiveIntakeAnalysis } from '@/components/LiveIntakeAnalysis';
 
 export default function Home() {
   const [analysis, setAnalysis] = useState(null);
