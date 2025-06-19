@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import ConversationalIntake from '@/components/ConversationalIntake';
-import LiveIntakeAnalysis from '@/components/LiveIntakeAnalysis';
+import { ConversationalIntake } from '@/components/ConversationalIntake';
+import { LiveIntakeAnalysis } from '@/components/LiveIntakeAnalysis';
 
 export default function Home() {
   const [analysis, setAnalysis] = useState(null);
