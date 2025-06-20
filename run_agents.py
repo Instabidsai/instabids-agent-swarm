@@ -48,22 +48,39 @@ class AgentRunner:
         self.running = True
 
     async def start_agent(self, agent_type: str, agent_id: str = None):
-        """Start a specific agent type."""
+        """
+        Initializes, sets up, and starts a specific agent type.
+        This now correctly handles setup failures.
+        """
         if agent_type not in AGENT_MAP:
             print(f"❌ Unknown agent type: {agent_type}")
             return False
             
+        agent = None
         try:
             AgentClass = AGENT_MAP[agent_type]
             agent = AgentClass(agent_id=agent_id)
-            print(f"🤖 Starting {agent_type} agent: {agent.agent_id}")
+            print(f"🤖 Initializing {agent_type} agent: {agent.agent_id}")
             
-            task = asyncio.create_task(agent.start_processing())
+            # ======================= FIX ============================
+            # Await the setup() method directly. If it fails (e.g., can't
+            # connect to Redis), the exception will be caught here.
+            await agent.setup()
+            # ===================== END FIX ==========================
+
+            # If setup is successful, create the background task for the run loop
+            task = asyncio.create_task(agent.run())
             self.agents.append((agent, task))
-            print(f"✅ {agent_type} agent started successfully!")
+            print(f"✅ {agent_type} agent started successfully and is now running.")
             return True
+            
         except Exception as e:
-            print(f"❌ Failed to start {agent_type} agent: {e}")
+            # This block will now catch setup failures.
+            agent_name = agent.agent_id if agent else agent_type
+            print(f"❌ Failed to start {agent_name}: {e}")
+            # Optionally, perform cleanup if the agent object was created
+            if agent:
+                await agent.graceful_shutdown()
             return False
 
     async def start_all_agents(self):
@@ -115,12 +132,12 @@ async def main():
         
     if len(sys.argv) < 2:
         print("Usage:")
-        print("  python run_agents.py all              # Start all agents")
-        print("  python run_agents.py intake           # Start intake agent only")
-        print("  python run_agents.py scope            # Start scope agent only")
-        print("  python run_agents.py filter           # Start filter agent only")
-        print("  python run_agents.py payment          # Start payment agent only")
-        print("  python run_agents.py ui               # Start UI agent only")
+        print("  python run_agents.py all                # Start all agents")
+        print("  python run_agents.py intake             # Start intake agent only")
+        print("  python run_agents.py scope              # Start scope agent only")
+        print("  python run_agents.py filter             # Start filter agent only")
+        print("  python run_agents.py payment            # Start payment agent only")
+        print("  python run_agents.py ui                 # Start UI agent only")
         return
 
     runner = AgentRunner()
