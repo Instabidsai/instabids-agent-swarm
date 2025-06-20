@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """
+# Cache invalidation: 2025-06-20T07:55:00Z - Force rebuild for Redis client fix
 Agent Runner Script - Starts individual agents for the InstaBids Agent Swarm
 """
 import asyncio
@@ -62,11 +63,11 @@ class AgentRunner:
             agent = AgentClass(agent_id=agent_id)
             print(f"🤖 Initializing {agent_type} agent: {agent.agent_id}")
             
-            # ======================= FIX ============================
+            # ================================ FIX ================================
             # Await the setup() method directly. If it fails (e.g., can't
             # connect to Redis), the exception will be caught here.
             await agent.setup()
-            # ===================== END FIX ==========================
+            # ============================== END FIX ==============================
 
             # If setup is successful, create the background task for the run loop
             task = asyncio.create_task(agent.run())
@@ -119,7 +120,7 @@ class AgentRunner:
 def setup_signal_handlers(runner):
     """Setup graceful shutdown on SIGINT/SIGTERM."""
     def signal_handler(signum, frame):
-        print(f"\n📡 Received signal {signum}")
+        print(f"\n🔡 Received signal {signum}")
         asyncio.create_task(runner.shutdown())
     
     signal.signal(signal.SIGINT, signal_handler)
@@ -132,12 +133,12 @@ async def main():
         
     if len(sys.argv) < 2:
         print("Usage:")
-        print("  python run_agents.py all                # Start all agents")
-        print("  python run_agents.py intake             # Start intake agent only")
-        print("  python run_agents.py scope              # Start scope agent only")
-        print("  python run_agents.py filter             # Start filter agent only")
-        print("  python run_agents.py payment            # Start payment agent only")
-        print("  python run_agents.py ui                 # Start UI agent only")
+        print("  python run_agents.py all               # Start all agents")
+        print("  python run_agents.py intake            # Start intake agent only")
+        print("  python run_agents.py scope             # Start scope agent only")
+        print("  python run_agents.py filter            # Start filter agent only")
+        print("  python run_agents.py payment           # Start payment agent only")
+        print("  python run_agents.py ui                # Start UI agent only")
         return
 
     runner = AgentRunner()
