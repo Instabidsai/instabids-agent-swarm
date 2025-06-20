@@ -42,15 +42,30 @@ class BaseAgent(ABC):
     async def process_event(self, event_data: Dict[str, Any]) -> None:
         pass
 
-    async def start_processing(self) -> None:
-        self.logger.info(f"Agent {self.agent_id} starting on stream '{self.event_consumer.stream_name}'.")
+    async def setup(self):
+        """
+        Performs one-time, awaitable setup for the agent, like creating
+        a consumer group. This method is designed to raise exceptions
+        on failure.
+        """
+        self.logger.info(f"Setting up agent {self.agent_id}...")
         await self.event_consumer.setup()
+        self.logger.info(
+            f"Agent {self.agent_id} setup complete for stream '{self.event_consumer.stream_name}'."
+        )
+
+    async def run(self):
+        """
+        The main, continuous event processing loop for the agent.
+        This method should only be called after a successful setup.
+        """
+        self.logger.info(f"Agent {self.agent_id} entering main processing loop.")
         self.is_running = True
         while self.is_running:
             try:
                 events = await self.event_consumer.consume()
                 if not events:
-                    await asyncio.sleep(1)
+                    await asyncio.sleep(1)  # Short sleep when idle
                     continue
                 for stream, messages in events:
                     for message_id, event_data in messages:
@@ -58,8 +73,16 @@ class BaseAgent(ABC):
                         self._tasks.append(task)
                         task.add_done_callback(self._tasks.remove)
             except Exception as e:
-                self.logger.error(f"Agent loop error for {self.agent_id}: {e}", exc_info=True)
-                await asyncio.sleep(5)
+                self.logger.error(f"Error in consumer loop: {e}", exc_info=True)
+                await asyncio.sleep(5)  # Backoff on loop error
+
+    # Deprecate the old method to avoid confusion.
+    # We will remove it after confirming the new logic works.
+    async def start_processing(self):
+        """DEPRECATED: Use setup() and run() instead."""
+        self.logger.warning("start_processing is deprecated. Use setup() and run() separately.")
+        await self.setup()
+        await self.run()
 
     async def _handle_message(self, stream: bytes, message_id: bytes, event_data: Dict[bytes, bytes]) -> None:
         decoded_stream = stream.decode('utf-8')
