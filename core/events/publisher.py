@@ -19,7 +19,8 @@ class EventPublisher:
     async def _get_client(self) -> redis.Redis:
         if self.__class__._client is None:
             self.logger.info("Initializing Redis connection for publisher.")
-            self.__class__._client = redis.from_url(self.redis_url)
+            # Fix for DigitalOcean managed Redis TLS connection
+            self.__class__._client = redis.from_url(self.redis_url, ssl_cert_reqs=None)
         return self.__class__._client
 
     async def publish(self, stream: str, event_type: str, data: dict, correlation_id: Optional[str] = None) -> str:
