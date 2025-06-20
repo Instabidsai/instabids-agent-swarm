@@ -1,5 +1,6 @@
 # core/events/consumer.py
 import redis.asyncio as redis
+import redis.exceptions  # Import exceptions from main redis module
 import os
 import logging
 from typing import Optional
@@ -19,7 +20,7 @@ class EventConsumer:
         try:
             await self.redis_client.xgroup_create(self.stream_name, self.group_name, id='0', mkstream=True)
             self.logger.info(f"Consumer group '{self.group_name}' ready for stream '{self.stream_name}'.")
-        except redis.exceptions.ResponseError as e:
+        except redis.exceptions.ResponseError as e:  # Use redis.exceptions instead of redis.asyncio.exceptions
             if "BUSYGROUP" not in str(e):
                 self.logger.error(f"Error creating consumer group: {e}", exc_info=True)
                 raise
