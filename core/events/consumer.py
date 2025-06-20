@@ -10,8 +10,8 @@ class EventConsumer:
         self.redis_url = redis_url or os.getenv("REDIS_URL")
         if not self.redis_url:
             raise ValueError("REDIS_URL environment variable not set.")
-        # Fix for DigitalOcean managed Redis TLS connection
-        self.redis_client = redis.from_url(self.redis_url, ssl_cert_reqs=None)
+        # Fix for DigitalOcean managed Redis TLS connection - use proper async client
+        self.redis_client = redis.Redis.from_url(self.redis_url, ssl_cert_reqs=None)
         self.stream_name = stream_name
         self.group_name = group_name
         self.consumer_name = consumer_name
